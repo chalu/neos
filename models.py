@@ -17,7 +17,6 @@ quirks of the data set, such as missing names and unknown diameters.
 
 You'll edit this file in Task 1.
 """
-import math
 from helpers import cd_to_datetime, datetime_to_str
 
 
@@ -39,19 +38,68 @@ class NearEarthObject:
 
         :param info: A dictionary of excess keyword arguments supplied to the constructor.
         """
-        self.name = None if info['name'] is None else info['name'].strip()
-        self.diameter =  float('nan') if math.isnan(info['diameter']) else info['diameter']
-        self.hazardous = False if info['hazardous'] is None else info['hazardous']
+        name = info['name']
+        if name is None or '' == name.strip():
+            name = None
+        else:
+            name = name.strip()
+
+        diameter = info['diameter']
+        if diameter is None or diameter == '':
+            diameter = float('nan')
+        else:
+            diameter = float(diameter)
+
+        hazardous = info['hazardous']
+        if hazardous == 'Y':
+            hazardous = True
+        elif hazardous is None or hazardous == '' or hazardous == 'N':
+            hazardous = False
+
+        designation = info['designation']
+        if designation is None or designation.strip() == '':
+            designation = None
+        else:
+            designation = designation.strip()
+
+        self.name = name
+        self.hazardous = hazardous
+        self.diameter =  diameter
         self.designation = None if info['designation'] is None else info['designation'].strip()
 
         # Create an empty initial collection of linked approaches.
         self.approaches = []
 
+    # @property
+    # def name(self):
+    #     """Get the name of this NEO for easy reference"""
+    #     return self.name
+    
+    # @name.setter
+    # def name(self, nme):
+    #     """Set the name of this NEO for easy reference"""
+    #     self.name = nme
+
+    @property
+    def desig(self):
+        """Get the primary designation of this NEO for easy reference"""
+        return self.designation
+    
+    # @designation.setter
+    # def designation(self, desig):
+    #     """Set the primary designation of this NEO for easy reference"""
+    #     self.designation = desig
+    
     @property
     def fullname(self):
         """Return a representation of the full name of this NEO."""
         # Use self.designation and self.name to build a fullname for this object.
         return f"{self.designation} {self.name}"
+    
+    def approached_as(self, approach):
+        """Record an approach made by this NEO"""
+        self.approaches.append(approach)
+        approach.neo = self
 
     def __str__(self):
         """Return `str(self)`."""
@@ -93,11 +141,30 @@ class CloseApproach:
         self.distance = 0.0
         self.velocity = 0.0
         self.time = None if info['time'] is None else cd_to_datetime(info['time'])
-        self._designation = None if info['designation'] is None else info['designation'].strip()
+        self.designation = None if info['designation'] is None else info['designation'].strip()
         
 
         # Create an attribute for the referenced NEO, originally None.
         self.neo = None
+
+    @property
+    def desig(self):
+        """Get the primary designation of the NEO involved in this near approach"""
+        return self.designation
+    
+    # @designation.setter
+    # def designation(self, desig):
+    #     """Set the primary designation of the NEO involved in this near approach"""
+    #     self.designation = desig
+    
+    @property
+    def caused_by(self):
+        """Get the NEO involved in this near approach"""
+        return self.neo
+    
+    # @neo.setter
+    # def neo(self, a_neo):
+    #     self.neo = a_neo
 
     @property
     def time_str(self):
