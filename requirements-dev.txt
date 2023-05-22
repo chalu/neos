@@ -1,0 +1,5 @@
+charset-normalizer==3.1.0
+pycodestyle==2.10.0
+pydocstyle==6.3.0
+snowballstemmer==2.2.0
+untokenize==0.1.1
