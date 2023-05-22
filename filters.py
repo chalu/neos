@@ -16,6 +16,8 @@ iterator.
 
 You'll edit this file in Tasks 3a and 3c.
 """
+
+import itertools
 import operator as op
 
 
@@ -226,5 +228,5 @@ def limit(iterator, cap=None):
     :yield: The first (at most) `cap` values from the iterator.
     """
     # Produce at most `cap` values from the given iterator.
-    cap = len(iterator) if cap is None or cap == 0 else cap
-    return iterator[:cap]
+    cap = cap if cap >= 1 else None
+    return itertools.islice(iterator, cap)
