@@ -1,4 +1,4 @@
-"""Extract data on NEOs and approaches from CSV and JSON files.
+"""Extract NEOs and approaches data from CSV and JSON files.
 
 The `load_neos` function extracts NEO data from a CSV file, formatted as
 described in the project instructions, into a collection of `NearEarthObject`s.
