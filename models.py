@@ -94,7 +94,7 @@ class NearEarthObject:
             apprch.neo = self
 
     def ascsv(self):
-        """Get the data for this NEO for CSV output"""
+        """Get the data for this NEO for CSV output."""
         return [
             self.designation,
             self.name or '',
@@ -103,7 +103,7 @@ class NearEarthObject:
         ]
 
     def asjson(self):
-        """Get the data for this NEO for JSON output"""
+        """Get the data for this NEO for JSON output."""
         return {
             'name': self.name or '',
             'diameter_km': str(self.diameter).lower(),
@@ -191,7 +191,7 @@ class CloseApproach:
         return f"{datetime_to_str(self.time)}"
 
     def ascsv(self):
-        """Get the data for this approach for CSV output"""
+        """Get the data for this approach for CSV output."""
         dt_utc = self.time.replace(tzinfo=timezone.utc)
         record = [
             datetime.strptime(dt_utc, '%Y-%m-%d %H:%M'),
@@ -202,7 +202,7 @@ class CloseApproach:
         return record
 
     def asjson(self):
-        """Get the data for this Approach for JSON output"""
+        """Get the data for this Approach for JSON output."""
         dt_utc = self.time.replace(tzinfo=timezone.utc)
         obj = dict()
         obj['datetime_utc'] = datetime.strptime(dt_utc, '%Y-%m-%d %H:%M')

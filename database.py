@@ -12,6 +12,7 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 You'll edit this file in Tasks 2 and 3.
 """
 
+
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
 
@@ -128,7 +129,6 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
         # Generate `CloseApproach` objects that match all of the filters.
-        print("Generate `CloseApproach` objects that match all of the filters\n")
         for neopdes in self._approaches:
             elligible = True
             approaches = self._approaches[neopdes]

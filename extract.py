@@ -61,7 +61,7 @@ def load_approaches(cad_json_path) -> List[CloseApproach]:
             json_data = json.load(file)
             data = json_data['data']
             fields = json_data['fields']
-            
+
             for record in data:
                 pdes = record[fields.index('des')]
                 cls_approach = CloseApproach(
