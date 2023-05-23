@@ -17,6 +17,8 @@ quirks of the data set, such as missing names and unknown diameters.
 
 You'll edit this file in Task 1.
 """
+
+from datetime import timezone, datetime
 from helpers import cd_to_datetime, datetime_to_str
 
 
@@ -80,7 +82,10 @@ class NearEarthObject:
     def fullname(self):
         """Return a representation of the full name of this NEO."""
         # Use self.designation and self.name to build a fullname.
-        return f"{self.designation} {self.name}"
+        fname = f"{self.designation}"
+        if self.name is not None:
+            fname = f"{fname} {self.name}"
+        return fname
 
     def approached_as(self, approaches):
         """Record approaches made by this NEO."""
@@ -88,12 +93,30 @@ class NearEarthObject:
             self.approaches.append(apprch)
             apprch.neo = self
 
+    def ascsv(self):
+        """Get the data for this NEO for CSV output"""
+        return [
+            self.designation,
+            self.name or '',
+            self.diameter,
+            self.hazardous or False
+        ]
+
+    def asjson(self):
+        """Get the data for this NEO for JSON output"""
+        return {
+            'name': self.name or '',
+            'diameter_km': str(self.diameter).lower(),
+            'designation': self.designation,
+            'potentially_hazardous': self.hazardous or False
+        }
+
     def __str__(self):
         """Return `str(self)`."""
         # Use this object's attributes to return a human-readable string.
         # The project instructions include one possibility.
         # Peek at the __repr__ for examples of advanced formatting.
-        return f"A NEO {self.fullname}"
+        return f"NEO {self.fullname}"
 
     def __repr__(self):
         """Return a computer-readable string of this object."""
@@ -166,6 +189,27 @@ class CloseApproach:
         # function to build a formatted representation of the approach's.
         # time. Use self._designation and self.name to build a fullname.
         return f"{datetime_to_str(self.time)}"
+
+    def ascsv(self):
+        """Get the data for this approach for CSV output"""
+        dt_utc = self.time.replace(tzinfo=timezone.utc)
+        record = [
+            datetime.strptime(dt_utc, '%Y-%m-%d %H:%M'),
+            self.distance,
+            self.velocity
+        ]
+        record.extend(self.neo.ascsv())
+        return record
+
+    def asjson(self):
+        """Get the data for this Approach for JSON output"""
+        dt_utc = self.time.replace(tzinfo=timezone.utc)
+        obj = dict()
+        obj['datetime_utc'] = datetime.strptime(dt_utc, '%Y-%m-%d %H:%M')
+        obj['distance_au'] = self.distance
+        obj['velocity_km_s'] = self.velocity
+        obj['neo'] = self.neo.asjson()
+        return obj
 
     def __str__(self):
         """Return `str(self)`."""

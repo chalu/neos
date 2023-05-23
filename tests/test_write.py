@@ -36,11 +36,16 @@ TEST_CAD_FILE = TESTS_ROOT / 'test-cad-2020.json'
 
 
 def build_results(n):
-    neos = tuple(load_neos(TEST_NEO_FILE))
-    approaches = tuple(load_approaches(TEST_CAD_FILE))
+    neos_map = load_neos(TEST_NEO_FILE)
+
+    all_approaches = []
+    approaches_map = load_approaches(TEST_CAD_FILE)
+    for neopdes in approaches_map:
+        all_approaches.extend(approaches_map[neopdes])
+    approaches = tuple(all_approaches)
 
     # Only needed to link together these objects.
-    NEODatabase(neos, approaches)
+    NEODatabase(neos_map, approaches_map)
 
     return approaches[:n]
 

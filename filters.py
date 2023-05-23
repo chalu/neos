@@ -19,6 +19,7 @@ You'll edit this file in Tasks 3a and 3c.
 
 import itertools
 import operator as op
+# from datetime import datetime
 
 
 class UnsupportedCriterionError(NotImplementedError):
@@ -206,14 +207,15 @@ def create_filters(
     if distance_max is not None:
         filters.append(FilterByDistance(op.le, float(distance_max)))
 
+    # datetime.strptime(date, '%Y-%m-%d')
     if date is not None:
-        filters.append(FilterByDate(op.eq, float(date)))
+        filters.append(FilterByDate(op.eq, date))
 
     if start_date is not None:
-        filters.append(FilterByDate(op.ge, float(start_date)))
+        filters.append(FilterByDate(op.ge, start_date))
 
     if end_date is not None:
-        filters.append(FilterByDate(op.le, float(end_date)))
+        filters.append(FilterByDate(op.le, end_date))
 
     return tuple(filters)
 
@@ -228,5 +230,6 @@ def limit(iterator, cap=None):
     :yield: The first (at most) `cap` values from the iterator.
     """
     # Produce at most `cap` values from the given iterator.
-    cap = cap if cap >= 1 else None
+    if cap is None or cap <= 0:
+        cap = None
     return itertools.islice(iterator, cap)

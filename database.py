@@ -47,10 +47,10 @@ class NEODatabase:
         # Link together the NEOs and their close approaches.
         print("\nLinking the NEOs and their close approaches ...")
         count = 0
-        for pdes in self._approaches:
-            neo = neos[pdes]
+        for neopdes in self._approaches:
+            neo = neos[neopdes]
             if neo is not None:
-                apprchs = self._approaches[pdes]
+                apprchs = self._approaches[neopdes]
                 neo.approached_as(apprchs)
                 count += len(apprchs)
 
@@ -128,16 +128,23 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
         # Generate `CloseApproach` objects that match all of the filters.
-        print("\n Generate `CloseApproach` objects that match all of the filters")
-        for approach in self._approaches:
+        print("Generate `CloseApproach` objects that match all of the filters\n")
+        for neopdes in self._approaches:
             elligible = True
-            for check in filters:
-                elligible = check(approach)
+            approaches = self._approaches[neopdes]
+
+            for apprch in approaches:
+                for check in filters:
+                    elligible = check(apprch)
+
+                    # need all filters to pass, so we stop
+                    # evaluating more filters at the first failure
+                    if elligible is False:
+                        break
+
+                # if any filter failed, then we don't have a match!
                 if elligible is False:
-                    break
+                    continue
 
-            # any filter failed
-            if elligible is False:
-                continue
-
-            yield approach
+                # all filters passed at this point, so we have a match
+                yield apprch

@@ -28,7 +28,10 @@ TEST_CAD_FILE = TESTS_ROOT / 'test-cad-2020.json'
 class TestLoadNEOs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.neos = load_neos(TEST_NEO_FILE)
+        neos_map = load_neos(TEST_NEO_FILE)
+        cls.neos = []
+        for pdes in neos_map:
+            cls.neos.append(neos_map[pdes])
         cls.neos_by_designation = {neo.designation: neo for neo in cls.neos}
 
     @classmethod
@@ -81,7 +84,10 @@ class TestLoadNEOs(unittest.TestCase):
 class TestLoadApproaches(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.approaches = load_approaches(TEST_CAD_FILE)
+        approaches_map = load_approaches(TEST_CAD_FILE)
+        cls.approaches = []
+        for neopdes in approaches_map:
+            cls.approaches.extend(approaches_map[neopdes])
 
     @classmethod
     def get_first_approach_or_none(cls):
