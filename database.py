@@ -12,7 +12,6 @@ data on NEOs and close approaches extracted by `extract.load_neos` and
 You'll edit this file in Tasks 2 and 3.
 """
 
-
 class NEODatabase:
     """A database of near-Earth objects and their close approaches.
 
@@ -46,18 +45,16 @@ class NEODatabase:
         # What additional auxiliary data structures will be useful?
 
         # Link together the NEOs and their close approaches.
-        for neo in self._neos:
-            designation = neo.desig
+        print("\nLinking the NEOs and their close approaches ...")
+        count = 0
+        for pdes in self._approaches:
+            neo = neos[pdes]
+            if neo is not None:
+                apprchs = self._approaches[pdes]
+                neo.approached_as(apprchs)
+                count += len(apprchs)
 
-            if designation is None or designation == '':
-                continue
-
-            for apprch in self._approaches:
-                if apprch.desig is None or apprch.desig == '':
-                    continue
-
-                if apprch.desig.lower() == designation.lower():
-                    neo.approached_as(apprch)
+        print(f"\nDone! Linked {count} Appraoches\n\n")
 
     def get_neo_by_designation(self, designation):
         """Find and return an NEO by its primary designation.
@@ -77,11 +74,9 @@ class NEODatabase:
             return None
 
         found = None
-        for neo in self._neos:
-            if neo.desig is None or neo.desig == '':
-                continue
-
-            if neo.desig.lower() == designation.lower():
+        for pdes in self._neos:
+            neo = self._neos[pdes]
+            if pdes == designation.lower():
                 found = neo
                 break
 
@@ -102,11 +97,13 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # Fetch an NEO by its name.
+        print(f"\nFetch an NEO by the name: {name}")
         if name is None or name == '':
             return None
 
         found = None
-        for neo in self._neos:
+        for pdes in self._neos:
+            neo = self._neos[pdes]
             if neo.name is None or neo.name == '':
                 continue
 
@@ -131,6 +128,7 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
         # Generate `CloseApproach` objects that match all of the filters.
+        print("\n Generate `CloseApproach` objects that match all of the filters")
         for approach in self._approaches:
             elligible = True
             for check in filters:

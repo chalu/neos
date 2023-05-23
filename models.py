@@ -72,7 +72,7 @@ class NearEarthObject:
         self.approaches = []
 
     @property
-    def desig(self):
+    def pdes(self):
         """Get the primary designation of this NEO for easy reference."""
         return self.designation
 
@@ -82,10 +82,11 @@ class NearEarthObject:
         # Use self.designation and self.name to build a fullname.
         return f"{self.designation} {self.name}"
 
-    def approached_as(self, approach):
-        """Record an approach made by this NEO."""
-        self.approaches.append(approach)
-        approach.neo = self
+    def approached_as(self, approaches):
+        """Record approaches made by this NEO."""
+        for apprch in approaches:
+            self.approaches.append(apprch)
+            apprch.neo = self
 
     def __str__(self):
         """Return `str(self)`."""
@@ -139,7 +140,7 @@ class CloseApproach:
         self.neo = None
 
     @property
-    def desig(self):
+    def neopdes(self):
         """Get the primary designation of the NEO involved."""
         return self._designation
 

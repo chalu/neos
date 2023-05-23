@@ -15,6 +15,7 @@ You'll edit this file in Task 2.
 """
 import json
 from typing import List
+from collections import defaultdict
 from csv import DictReader as reader
 
 from models import NearEarthObject, CloseApproach
@@ -26,19 +27,20 @@ def load_neos(neo_csv_path) -> List[NearEarthObject]:
     :param neo_csv_path: A path to a CSV file containing NEOs data.
     :return: A collection of `NearEarthObject`s.
     """
-    parsed = []
+    parsed = dict()
     try:
         with open(neo_csv_path, encoding="UTF-8") as file:
             data = reader(file, delimiter=',')
 
             for row in data:
+                pdes = row['pdes']
                 neo = NearEarthObject(
                     name=row['name'],
+                    designation=pdes,
                     hazardous=row['pha'],
-                    designation=row['pdes'],
                     diameter=row['diameter']
                 )
-                parsed.append(neo)
+                parsed[pdes.lower()] = neo
     except (OSError, IOError) as err:
         print(f'Error loading data from {neo_csv_path}')
         raise err
@@ -52,23 +54,27 @@ def load_approaches(cad_json_path) -> List[CloseApproach]:
     :param cad_json_path: A path to a JSON file containing close approaches.
     :return: A collection of `CloseApproach`es.
     """
-    parsed = []
+    # parsed = []
+    mapped = defaultdict(list)
     try:
         with open(cad_json_path, encoding="UTF-8") as file:
             json_data = json.load(file)
             data = json_data['data']
             fields = json_data['fields']
+            
             for record in data:
+                pdes = record[fields.index('des')]
                 cls_approach = CloseApproach(
+                    designation=pdes,
                     time=record[fields.index('cd')],
                     distance=record[fields.index('dist')],
-                    velocity=record[fields.index('v_rel')],
-                    designation=record[fields.index('des')]
+                    velocity=record[fields.index('v_rel')]
                 )
-                parsed.append(cls_approach)
+                mapped[pdes.lower()].append(cls_approach)
+                # parsed.append(cls_approach)
 
     except (OSError, IOError) as err:
         print(f'Error loading data from {cad_json_path}')
         raise err
 
-    return parsed
+    return mapped
