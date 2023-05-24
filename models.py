@@ -106,7 +106,7 @@ class NearEarthObject:
         """Get the data for this NEO for JSON output."""
         return {
             'name': self.name or '',
-            'diameter_km': str(self.diameter).lower(),
+            'diameter_km': self.diameter,
             'designation': self.designation,
             'potentially_hazardous': self.hazardous or False
         }
@@ -194,7 +194,7 @@ class CloseApproach:
         """Get the data for this approach for CSV output."""
         dt_utc = self.time.replace(tzinfo=timezone.utc)
         record = [
-            datetime.strptime(dt_utc, '%Y-%m-%d %H:%M'),
+            dt_utc.strftime('%Y-%m-%d %H:%M'),
             self.distance,
             self.velocity
         ]
@@ -205,7 +205,7 @@ class CloseApproach:
         """Get the data for this Approach for JSON output."""
         dt_utc = self.time.replace(tzinfo=timezone.utc)
         obj = dict()
-        obj['datetime_utc'] = datetime.strptime(dt_utc, '%Y-%m-%d %H:%M')
+        obj['datetime_utc'] = dt_utc.strftime('%Y-%m-%d %H:%M')
         obj['distance_au'] = self.distance
         obj['velocity_km_s'] = self.velocity
         obj['neo'] = self.neo.asjson()

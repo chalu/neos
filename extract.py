@@ -21,13 +21,14 @@ from csv import DictReader as reader
 from models import NearEarthObject, CloseApproach
 
 
-def load_neos(neo_csv_path) -> List[NearEarthObject]:
+def load_neos(neo_csv_path, as_map=False) -> List[NearEarthObject]:
     """Read near-Earth object information from a CSV file.
 
     :param neo_csv_path: A path to a CSV file containing NEOs data.
     :return: A collection of `NearEarthObject`s.
     """
-    parsed = dict()
+    parsed = []
+    mapped = dict()
     try:
         with open(neo_csv_path, encoding="UTF-8") as file:
             data = reader(file, delimiter=',')
@@ -40,21 +41,26 @@ def load_neos(neo_csv_path) -> List[NearEarthObject]:
                     hazardous=row['pha'],
                     diameter=row['diameter']
                 )
-                parsed[pdes.lower()] = neo
+                parsed.append(neo)
+                if as_map:
+                    mapped[pdes.lower()] = neo
     except (OSError, IOError) as err:
         print(f'Error loading data from {neo_csv_path}')
         raise err
 
+    if as_map:
+        return mapped
+
     return parsed
 
 
-def load_approaches(cad_json_path) -> List[CloseApproach]:
+def load_approaches(cad_json_path, as_map=False) -> List[CloseApproach]:
     """Read close approach data from a JSON file.
 
     :param cad_json_path: A path to a JSON file containing close approaches.
     :return: A collection of `CloseApproach`es.
     """
-    # parsed = []
+    parsed = []
     mapped = defaultdict(list)
     try:
         with open(cad_json_path, encoding="UTF-8") as file:
@@ -70,11 +76,14 @@ def load_approaches(cad_json_path) -> List[CloseApproach]:
                     distance=record[fields.index('dist')],
                     velocity=record[fields.index('v_rel')]
                 )
+                parsed.append(cls_approach)
                 mapped[pdes.lower()].append(cls_approach)
-                # parsed.append(cls_approach)
 
     except (OSError, IOError) as err:
         print(f'Error loading data from {cad_json_path}')
         raise err
 
-    return mapped
+    if as_map:
+        return mapped
+
+    return parsed

@@ -22,7 +22,7 @@ class NEODatabase:
     querying for close approaches that match criteria.
     """
 
-    def __init__(self, neos, approaches):
+    def __init__(self, neos, approaches, use_map=False):
         """Create a new `NEODatabase`.
 
         As a precondition, this constructor assumes that the collections
@@ -40,20 +40,29 @@ class NEODatabase:
         :param neos: A collection of `NearEarthObject`s.
         :param approaches: A collection of `CloseApproach`es.
         """
+
         self._neos = neos
         self._approaches = approaches
+        self.use_map = use_map
 
         # What additional auxiliary data structures will be useful?
-
         # Link together the NEOs and their close approaches.
-        print("\nLinking the NEOs and their close approaches ...")
+        print("\nLinking NEOs and their approaches ...")
         count = 0
-        for neopdes in self._approaches:
-            neo = neos[neopdes]
-            if neo is not None:
-                apprchs = self._approaches[neopdes]
-                neo.approached_as(apprchs)
-                count += len(apprchs)
+        if self.use_map:
+            for neopdes in self._approaches:
+                neo = neos[neopdes]
+                if neo is not None:
+                    apprchs = self._approaches[neopdes]
+                    neo.approached_as(apprchs)
+                    count += len(apprchs)
+
+        else:
+            for apprch in self._approaches:
+                for neo in self._neos:
+                    if neo.pdes == apprch.neopdes:
+                        neo.approached_as([apprch])
+                        count += 1
 
         print(f"\nDone! Linked {count} Appraoches\n\n")
 
@@ -75,11 +84,17 @@ class NEODatabase:
             return None
 
         found = None
-        for pdes in self._neos:
-            neo = self._neos[pdes]
-            if pdes == designation.lower():
-                found = neo
-                break
+        if self.use_map:
+            for pdes in self._neos:
+                neo = self._neos[pdes]
+                if pdes == designation.lower():
+                    found = neo
+                    break
+        else:
+            for neo in self._neos:
+                if neo.pdes == designation.lower():
+                    found = neo
+                    break
 
         return found
 
@@ -98,19 +113,27 @@ class NEODatabase:
         :return: The `NearEarthObject` with the desired name, or `None`.
         """
         # Fetch an NEO by its name.
-        print(f"\nFetch an NEO by the name: {name}")
         if name is None or name == '':
             return None
 
         found = None
-        for pdes in self._neos:
-            neo = self._neos[pdes]
-            if neo.name is None or neo.name == '':
-                continue
+        if self.use_map:
+            for pdes in self._neos:
+                neo = self._neos[pdes]
+                if neo.name is None or neo.name == '':
+                    continue
+                if neo.name.lower() == name.lower():
+                    found = neo
+                    break
 
-            if neo.name.lower() == name.lower():
-                found = neo
-                break
+        else:
+            for neo in self._neos:
+                if neo.name is None or neo.name == '':
+                    continue
+
+                if neo.name.lower() == name.lower():
+                    found = neo
+                    break
 
         return found
 
@@ -129,22 +152,26 @@ class NEODatabase:
         :return: A stream of matching `CloseApproach` objects.
         """
         # Generate `CloseApproach` objects that match all of the filters.
-        for neopdes in self._approaches:
-            elligible = True
-            approaches = self._approaches[neopdes]
-
-            for apprch in approaches:
-                for check in filters:
-                    elligible = check(apprch)
-
-                    # need all filters to pass, so we stop
-                    # evaluating more filters at the first failure
-                    if elligible is False:
+        if self.use_map:
+            for neopdes in self._approaches:
+                elligible = True
+                approaches = self._approaches[neopdes]
+                for apprch in approaches:
+                    for fltr in filters:
+                        if not fltr(apprch):
+                            elligible = False
+                            break
+                    # if any filter failed, then we don't have a match!
+                    if elligible:
+                        yield apprch
+        else:
+            for apprch in self._approaches:
+                elligible = True
+                for fltr in filters:
+                    if not fltr(apprch):
+                        elligible = False
                         break
 
                 # if any filter failed, then we don't have a match!
-                if elligible is False:
-                    continue
-
-                # all filters passed at this point, so we have a match
-                yield apprch
+                if elligible:
+                    yield apprch

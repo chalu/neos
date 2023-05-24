@@ -383,7 +383,9 @@ def main():
     args = parser.parse_args()
 
     # Extract data from the data files into structured Python objects.
-    database = NEODatabase(load_neos(args.neofile), load_approaches(args.cadfile))
+    neos = load_neos(args.neofile, as_map=True)
+    approaches = load_approaches(args.cadfile, as_map=True)
+    database = NEODatabase(neos, approaches, use_map=True)
 
     # Run the chosen subcommand.
     if args.cmd == 'inspect':
