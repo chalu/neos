@@ -32,17 +32,10 @@ class TestQuery(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        neos_map = load_neos(TEST_NEO_FILE)
-        cls.neos = []
-        for pdes in neos_map:
-            cls.neos.append(neos_map[pdes])
+        cls.neos = load_neos(TEST_NEO_FILE)
+        cls.approaches = load_approaches(TEST_CAD_FILE)
 
-        approaches_map = load_approaches(TEST_CAD_FILE)
-        cls.approaches = []
-        for neopdes in approaches_map:
-            cls.approaches.extend(approaches_map[neopdes])
-
-        cls.db = NEODatabase(neos_map, approaches_map)
+        cls.db = NEODatabase(cls.neos, cls.approaches)
 
     def test_query_all(self):
         expected = set(self.approaches)

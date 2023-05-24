@@ -28,17 +28,10 @@ TEST_CAD_FILE = TESTS_ROOT / 'test-cad-2020.json'
 class TestDatabase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        neos_map = load_neos(TEST_NEO_FILE)
-        cls.neos = []
-        for pdes in neos_map:
-            cls.neos.append(neos_map[pdes])
+        cls.neos = load_neos(TEST_NEO_FILE)
+        cls.approaches = load_approaches(TEST_CAD_FILE)
 
-        approaches_map = load_approaches(TEST_CAD_FILE)
-        cls.approaches = []
-        for neopdes in approaches_map:
-            cls.approaches.extend(approaches_map[neopdes])
-
-        cls.db = NEODatabase(neos_map, approaches_map)
+        cls.db = NEODatabase(cls.neos, cls.approaches)
 
     def test_database_construction_links_approaches_to_neos(self):
         for approach in self.approaches:
