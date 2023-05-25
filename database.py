@@ -87,12 +87,12 @@ class NEODatabase:
         if self.use_map:
             for pdes in self._neos:
                 neo = self._neos[pdes]
-                if pdes == designation.lower():
+                if pdes == designation:
                     found = neo
                     break
         else:
             for neo in self._neos:
-                if neo.pdes == designation.lower():
+                if neo.pdes == designation:
                     found = neo
                     break
 
@@ -122,7 +122,7 @@ class NEODatabase:
                 neo = self._neos[pdes]
                 if neo.name is None or neo.name == '':
                     continue
-                if neo.name.lower() == name.lower():
+                if neo.name == name:
                     found = neo
                     break
 
@@ -131,7 +131,7 @@ class NEODatabase:
                 if neo.name is None or neo.name == '':
                     continue
 
-                if neo.name.lower() == name.lower():
+                if neo.name == name:
                     found = neo
                     break
 

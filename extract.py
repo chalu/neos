@@ -43,7 +43,7 @@ def load_neos(neo_csv_path, as_map=False) -> List[NearEarthObject]:
                 )
                 parsed.append(neo)
                 if as_map:
-                    mapped[pdes.lower()] = neo
+                    mapped[pdes] = neo
     except (OSError, IOError) as err:
         print(f'Error loading data from {neo_csv_path}')
         raise err
@@ -77,7 +77,7 @@ def load_approaches(cad_json_path, as_map=False) -> List[CloseApproach]:
                     velocity=record[fields.index('v_rel')]
                 )
                 parsed.append(cls_approach)
-                mapped[pdes.lower()].append(cls_approach)
+                mapped[pdes].append(cls_approach)
 
     except (OSError, IOError) as err:
         print(f'Error loading data from {cad_json_path}')
